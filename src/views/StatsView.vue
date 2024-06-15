@@ -1,6 +1,6 @@
 <template>
   <div class="statsContainer">
-    <h1>{{ $route.params.user }}</h1>
+    <h1>{{ $route.params.user || $route.params.org }}</h1>
     <Pie
       style="max-height: 30rem; position: relative"
       v-if="loaded === true"
@@ -29,18 +29,24 @@ interface LicenseCounts {
   [key: string]: number
 }
 
-const licenses = ref<LicenseCounts>({}) // Initialize as empty object
-const colours = ref<string[]>([]) // Array of hex color codes
+const licenses = ref<LicenseCounts>({})
+const colours = ref<string[]>([])
 const loaded = ref(false)
+const requestUrl = ref(`https://api.modrinth.com/v2/user/${route.params.user}/projects`)
 
 console.log(route.params.user)
 
-const response = await fetch(`https://api.modrinth.com/v2/user/${route.params.user}/projects`)
-const data: Project[] = await response.json() // Assume response is an array of projects
+if (route.path.includes('/org')) {
+  requestUrl.value = `https://api.modrinth.com/v3/organization/${route.params.org}/projects`
+} else {
+  requestUrl.value = `https://api.modrinth.com/v2/user/${route.params.user}/projects`
+}
 
-// Loop through projects with type checking
+const response = await fetch(requestUrl.value)
+const data: Project[] = await response.json()
+
 for (const item of data) {
-  const projectId = item.license.id // Use const for clarity
+  const projectId = item.license.id
   if (!Object.prototype.hasOwnProperty.call(licenses.value, projectId)) {
     licenses.value[projectId] = 1
     if (item.color.toString(16) !== 'ffffff') {
