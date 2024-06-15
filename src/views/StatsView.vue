@@ -19,17 +19,14 @@ ChartJS.register(ArcElement, Tooltip, Legend)
 
 const route = useRoute()
 
-// Define interface for project data
 interface Project {
   license: {
     id: string
   }
-  color: number // Assuming color is a number
+  color: number
 }
-
-// Define interface for licenses object
 interface LicenseCounts {
-  [key: string]: number // Key is license ID, value is count
+  [key: string]: number
 }
 
 const licenses = ref<LicenseCounts>({}) // Initialize as empty object
