@@ -1,0 +1,12 @@
+@import './base.css';
+
+#app {
+  padding: 1rem;
+}
+
+.statsContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
