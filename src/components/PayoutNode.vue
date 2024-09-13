@@ -1,6 +1,6 @@
 <template>
   <div class="revenue_container">
-    <span class="revenue_date">{{ RELATIVE_TIME.format(new Date(time ?? 0 * 1000)) }}</span>
+    <span class="revenue_date">{{ RELATIVE_TIME.format(new Date((time ?? 0) * 1000)) }}</span>
     <span>Total Revenue: {{ USD.format(revenue ?? 0) }}</span>
     <span>Creator Revenue: {{ USD.format(creatorRevenue ?? 0) }}</span>
   </div>
