@@ -14,7 +14,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import PayoutNode from '@/components/PayoutNode.vue'
 import { ref } from 'vue'
 
@@ -37,12 +37,12 @@ let total_25_75_paid = 0
 
 for (const node of last_30d_payouts) {
   if (new Date(node.time * 1000) > new Date('September 4, 2024 00:00:00')) {
-    const revenue = +node.creator_revenue
+    const revenue: number = +node.creator_revenue
     total_25_75_paid += revenue
   }
 }
 
-const total_90_10_paid = data.all_time - total_25_75_paid
+const total_90_10_paid: number = data.all_time - total_25_75_paid
 
 const all_revenue = total_90_10_paid * 1.125 + total_25_75_paid * 1.25
 

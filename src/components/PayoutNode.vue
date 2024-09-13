@@ -1,12 +1,12 @@
 <template>
   <div class="revenue_container">
-    <span class="revenue_date">{{ RELATIVE_TIME.format(new Date(time * 1000)) }}</span>
-    <span>Total Revenue: {{ USD.format(revenue) }}</span>
-    <span>Creator Revenue: {{ USD.format(creatorRevenue) }}</span>
+    <span class="revenue_date">{{ RELATIVE_TIME.format(new Date(time ?? 0 * 1000)) }}</span>
+    <span>Total Revenue: {{ USD.format(revenue ?? 0) }}</span>
+    <span>Creator Revenue: {{ USD.format(creatorRevenue ?? 0) }}</span>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 const props = defineProps({
   time: Number,
   revenue: Number,
