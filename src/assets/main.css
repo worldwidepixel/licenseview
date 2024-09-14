@@ -45,3 +45,9 @@
   font-size: 1.25rem;
   font-weight: 700;
 }
+
+.chart {
+  max-width: 50rem !important;
+  max-height: 20rem !important;
+  height: auto;
+}

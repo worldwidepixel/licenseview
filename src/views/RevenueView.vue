@@ -2,6 +2,7 @@
   <div class="statsContainer">
     <h1>{{ USD.format(total_revenue) }} paid to creators</h1>
     <span>{{ USD.format(all_revenue) }} total revenue since Nov. 12 2022 (est)</span>
+    <Line class="chart" v-if="loaded === true" :options="options" :data="chartData" />
     <div class="payout_grid">
       <PayoutNode
         v-for="node in data.data"
@@ -16,7 +17,21 @@
 
 <script setup lang="ts">
 import PayoutNode from '@/components/PayoutNode.vue'
-import { ref } from 'vue'
+import { Line } from 'vue-chartjs'
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  plugins
+} from 'chart.js'
+import { computed, ref } from 'vue'
+
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
 
 const loaded = ref(false)
 const requestUrl = ref(`https://api.modrinth.com/v3/payout/platform_revenue`)
@@ -28,6 +43,8 @@ const USD = new Intl.NumberFormat('en-US', {
   style: 'currency',
   currency: 'USD'
 })
+
+const TIME_FORMAT = new Intl.DateTimeFormat('en-US', { dateStyle: 'long' })
 
 const total_revenue = data.all_time
 
@@ -45,6 +62,92 @@ for (const node of last_30d_payouts) {
 const total_90_10_paid: number = data.all_time - total_25_75_paid
 
 const all_revenue = total_90_10_paid * 1.125 + total_25_75_paid * 1.25
+
+// CHART
+
+const chartInfo = computed(() => {
+  let labelData = []
+  let revenueData = []
+  let creatorRevenueData = []
+  let siteRevenueData = []
+  for (const datapoint of data.data) {
+    labelData.push(TIME_FORMAT.format(new Date(datapoint.time * 1000)))
+    revenueData.push(datapoint.revenue)
+    creatorRevenueData.push(datapoint.creator_revenue)
+    siteRevenueData.push(datapoint.revenue - datapoint.creator_revenue)
+  }
+  return {
+    labels: labelData.reverse(),
+    revenue: revenueData.reverse(),
+    creatorRevenue: creatorRevenueData.reverse(),
+    siteRevenue: siteRevenueData.reverse()
+  }
+})
+
+const options = {
+  responsive: true,
+  maintainAspectRatio: true,
+  scales: {
+    y: {
+      ticks: {
+        callback: (val: any) => {
+          return USD.format(val)
+        }
+      }
+    }
+  },
+  plugins: {
+    legend: {
+      labels: {
+        font: {
+          family: 'Inter'
+        }
+      }
+    },
+    tooltip: {
+      titleFont: {
+        family: 'Inter'
+      },
+      titleColor: '#000000',
+      bodyFont: {
+        family: 'Inter'
+      },
+      bodyColor: '#000000',
+      backgroundColor: '#ffffff',
+      borderWidth: 1,
+      borderColor: '#000000',
+      boxPadding: 4,
+      padding: 8
+    }
+  }
+}
+
+const chartData = {
+  labels: chartInfo.value.labels,
+  datasets: [
+    {
+      label: 'Creator Revenue',
+      borderColor: '#db2156ff',
+      backgroundColor: '#db2156ff',
+      tension: 0,
+      data: chartInfo.value.creatorRevenue
+    },
+    {
+      label: 'Total Revenue',
+      borderColor: '#43b34fff',
+      backgroundColor: '#43b34fff',
+      tension: 0,
+      data: chartInfo.value.revenue
+    },
+    {
+      label: 'Site Revenue',
+      borderColor: '#28cbd4ff',
+      backgroundColor: '#28cbd4ff',
+      tension: 0,
+      data: chartInfo.value.siteRevenue
+    }
+  ]
+}
 
 loaded.value = true
 </script>
