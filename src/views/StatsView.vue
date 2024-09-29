@@ -46,7 +46,7 @@ const response = await fetch(requestUrl.value)
 const data: Project[] = await response.json()
 
 for (const item of data) {
-  const projectId = item.license.id
+  const projectId = formatLicense(item.license.id)
   if (!Object.prototype.hasOwnProperty.call(licenses.value, projectId)) {
     licenses.value[projectId] = 1
     if (item.color.toString(16) !== 'ffffff') {
@@ -73,6 +73,15 @@ const chartData = {
       data: Object.values(licenses.value)
     }
   ]
+}
+
+function formatLicense(input: string) {
+  if (input === 'LicenseRef-All-Rights-Reserved') {
+    return 'ARR'
+  }
+  return !input.includes('LicenseRef')
+    ? input
+    : input.replace(/LicenseRef-/gm, ' ').replace(/-/gm, ' ')
 }
 
 loaded.value = true
