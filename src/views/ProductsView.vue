@@ -8,7 +8,7 @@
         <PriceNode
           v-for="price in product.prices"
           :exchangeRate="conversionData.rates[price.currency_code] ?? null"
-          :requestedCurrency="requestedCurrency"
+          :requestedCurrency="requestedCurrency.toString() ?? 'CAD'"
           :data="price"
           v-bind:key="price"
         />
